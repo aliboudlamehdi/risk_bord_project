@@ -1,0 +1,48 @@
+<div class="derogation-validation">
+  <h2>Demandes de dérogation en attente</h2>
+
+  @if (loading()) {
+    <p class="status-message">Chargement...</p>
+  }
+  @if (error()) {
+    <p class="status-message error">{{ error() }}</p>
+  }
+
+  <table class="requests-table">
+    <thead>
+      <tr>
+        <th>Contrepartie</th>
+        <th>Type de risque</th>
+        <th>Montant demandé</th>
+        <th>Raison</th>
+        <th>Demandé par</th>
+        <th>Créée le</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (req of requests(); track req.id) {
+        <tr>
+          <td>{{ req.counterpartyName }}</td>
+          <td>{{ req.limitType }}</td>
+          <td>{{ req.amount | number: '1.0-0' }}</td>
+          <td class="reason-cell">{{ req.reason }}</td>
+          <td>{{ req.requestedBy }}</td>
+          <td>{{ req.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+          <td class="actions">
+            <button type="button" class="approve" [disabled]="isProcessing(req.id)" (click)="approve(req.id)">
+              Valider
+            </button>
+            <button type="button" class="reject" [disabled]="isProcessing(req.id)" (click)="reject(req.id)">
+              Rejeter
+            </button>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" class="empty-row">Aucune demande en attente</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
