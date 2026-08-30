@@ -1,0 +1,109 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="derogation-form">
+  <h2>Nouvelle demande de dérogation</h2>
+
+  <div formGroupName="limitSelection" class="limit-selection">
+    <div class="field">
+      <label for="counterpartyId">Contrepartie *</label>
+      <select id="counterpartyId" formControlName="counterpartyId">
+        <option [ngValue]="null" disabled>-- Sélectionner --</option>
+        @for (cp of counterparties(); track cp.id) {
+          <option [ngValue]="cp.id">{{ cp.name }}</option>
+        }
+      </select>
+      @if (limitSelection.controls.counterpartyId.invalid && limitSelection.controls.counterpartyId.touched) {
+        <p class="field-error">La contrepartie est obligatoire</p>
+      }
+    </div>
+
+    <div class="field">
+      <label>Type de risque *</label>
+      <div class="radio-group">
+        @for (type of limitTypes; track type) {
+          <label class="radio-option">
+            <input type="radio" name="limitType" formControlName="limitType" [value]="type" />
+            {{ type }}
+          </label>
+        }
+      </div>
+      @if (limitSelection.controls.limitType.invalid && limitSelection.controls.limitType.touched) {
+        <p class="field-error">Le type de risque est obligatoire</p>
+      }
+    </div>
+
+    @if (limitSelection.hasError('limitNotFound')) {
+      <p class="field-error group-error">
+        Aucune limite n'existe pour cette contrepartie et ce type de risque. La demande ne peut pas être soumise.
+      </p>
+    }
+    @if (limitSelection.hasError('limitCheckFailed')) {
+      <p class="field-error group-error">Impossible de vérifier la limite (erreur serveur).</p>
+    }
+  </div>
+
+  <div class="field">
+    <label for="amount">Montant demandé *</label>
+    <input id="amount" type="number" formControlName="amount" min="0" step="any" />
+    @if (form.controls.amount.invalid && form.controls.amount.touched) {
+      @if (form.controls.amount.hasError('required')) {
+        <p class="field-error">Le montant demandé est obligatoire</p>
+      }
+      @if (form.controls.amount.hasError('notPositive')) {
+        <p class="field-error">Le montant doit être strictement supérieur à 0</p>
+      }
+    }
+    @if (form.controls.amount.hasError('amountExceedsThreshold')) {
+      <p class="field-error">
+        Le montant dépasse 150% de la limite max
+        @if (form.controls.amount.getError('amountExceedsThreshold')?.maxAmount; as maxAmount) {
+          (limite: {{ maxAmount }}, seuil: {{ maxAmount * 1.5 }})
+        }
+      </p>
+    }
+    @if (form.controls.amount.pending) {
+      <p class="field-hint">Vérification de la limite...</p>
+    }
+  </div>
+
+  <div class="field">
+    <label for="reason">Raison *</label>
+    <textarea id="reason" formControlName="reason" rows="4"></textarea>
+    @if (form.controls.reason.invalid && form.controls.reason.touched) {
+      @if (form.controls.reason.hasError('required')) {
+        <p class="field-error">La raison est obligatoire</p>
+      }
+      @if (form.controls.reason.hasError('minlength')) {
+        <p class="field-error">
+          La raison doit contenir au moins 20 caractères ({{ form.controls.reason.value.length }}/20)
+        </p>
+      }
+    }
+  </div>
+
+  <div class="field">
+    <label for="requestedBy">Demandé par *</label>
+    <input id="requestedBy" type="text" formControlName="requestedBy" />
+    @if (form.controls.requestedBy.invalid && form.controls.requestedBy.touched) {
+      @if (form.controls.requestedBy.hasError('required')) {
+        <p class="field-error">Ce champ est obligatoire</p>
+      }
+      @if (form.controls.requestedBy.hasError('minlength')) {
+        <p class="field-error">Ce champ doit contenir au moins 6 caractères</p>
+      }
+    }
+  </div>
+
+  @if (submitError()) {
+    <p class="status-message error">{{ submitError() }}</p>
+  }
+  @if (submitSuccess()) {
+    <p class="status-message success">Demande de dérogation créée avec succès.</p>
+  }
+
+  <button type="submit" [disabled]="form.invalid || form.pending || submitting()">
+    @if (submitting()) {
+      Envoi en cours...
+    } @else {
+      Soumettre
+    }
+  </button>
+</form>

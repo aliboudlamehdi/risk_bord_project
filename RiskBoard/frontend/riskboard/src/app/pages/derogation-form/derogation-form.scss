@@ -1,0 +1,88 @@
+.derogation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 520px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+
+  label {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 0.5rem 0.6rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font: inherit;
+  }
+}
+
+.radio-group {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 400;
+}
+
+.limit-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 6px;
+}
+
+.field-error {
+  color: #b00020;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.group-error {
+  font-weight: 600;
+}
+
+.field-hint {
+  color: #666;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.status-message {
+  &.error {
+    color: #b00020;
+  }
+
+  &.success {
+    color: #2e7d32;
+  }
+}
+
+button[type='submit'] {
+  align-self: flex-start;
+  padding: 0.55rem 1.4rem;
+  border: 1px solid #1a56db;
+  border-radius: 4px;
+  background: #1a56db;
+  color: #fff;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
