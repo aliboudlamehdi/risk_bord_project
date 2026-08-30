@@ -1,4 +1,4 @@
-package com.riskboard.service;
+package com.riskboard.entity;
 
 public enum AlertLevel {
     GREEN,

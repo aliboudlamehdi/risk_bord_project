@@ -1,5 +1,6 @@
 package com.riskboard.service;
 
+import com.riskboard.entity.AlertLevel;
 import com.riskboard.entity.Counterparty;
 import com.riskboard.entity.LimitType;
 import com.riskboard.entity.RiskLimit;

@@ -1,0 +1,99 @@
+<div class="dashboard">
+  <div class="toolbar">
+    @if (viewMode() === 'DETAIL') {
+      <input
+        type="text"
+        class="name-filter"
+        placeholder="Filtrer par nom de contrepartie..."
+        [ngModel]="nameFilter()"
+        (ngModelChange)="onFilterChange($event)"
+      />
+    }
+
+    <label class="view-selector">
+      Vue :
+      <select [ngModel]="viewMode()" (ngModelChange)="onViewModeChange($event)">
+        <option value="DETAIL">Vue détaillée</option>
+        @for (type of limitTypes; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  @if (loading()) {
+    <p class="status-message">Chargement...</p>
+  }
+  @if (error()) {
+    <p class="status-message error">{{ error() }}</p>
+  }
+
+  @if (viewMode() === 'DETAIL') {
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th (click)="sortBy('counterpartyName')">Nom <span class="sort-indicator">{{ sortIndicator('counterpartyName') }}</span></th>
+          <th (click)="sortBy('limitType')">Type de limite <span class="sort-indicator">{{ sortIndicator('limitType') }}</span></th>
+          <th (click)="sortBy('sector')">Secteur <span class="sort-indicator">{{ sortIndicator('sector') }}</span></th>
+          <th (click)="sortBy('maxAmount')">Limite Max <span class="sort-indicator">{{ sortIndicator('maxAmount') }}</span></th>
+          <th (click)="sortBy('usedAmount')">Utilisé <span class="sort-indicator">{{ sortIndicator('usedAmount') }}</span></th>
+          <th (click)="sortBy('usageRate')">% Usage <span class="sort-indicator">{{ sortIndicator('usageRate') }}</span></th>
+          <th (click)="sortBy('alertLevel')">Statut <span class="sort-indicator">{{ sortIndicator('alertLevel') }}</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of pagedItems(); track item.id) {
+          <tr>
+            <td>{{ item.counterpartyName }}</td>
+            <td>{{ item.limitType }}</td>
+            <td>{{ item.sector }}</td>
+            <td>{{ item.maxAmount | number: '1.0-0' }} {{ item.currency }}</td>
+            <td>{{ item.usedAmount | number: '1.0-0' }} {{ item.currency }}</td>
+            <td>{{ item.usageRate | number: '1.1-1' }} %</td>
+            <td>
+              <span class="badge" [class]="'badge-' + item.alertLevel.toLowerCase()">
+                @if (item.alertLevel === 'RED') {
+                  <span class="warning-icon" aria-hidden="true">⚠</span>
+                }
+                {{ item.alertLevel }}
+              </span>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty-row">Aucune donnée</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button type="button" (click)="goToPage(currentPage() - 1)" [disabled]="currentPage() === 1">Précédent</button>
+      <span>Page {{ currentPage() }} / {{ totalPages() }}</span>
+      <button type="button" (click)="goToPage(currentPage() + 1)" [disabled]="currentPage() === totalPages()">Suivant</button>
+    </div>
+  } @else {
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <!-- <th>Type de limite</th> -->
+          <th>Secteur</th>
+          <th>Total Utilisé</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of sectorExposures(); track item.sector) {
+          <tr>
+            <!-- <td>{{ item.limitType }}</td> -->
+            <td>{{ item.sector }}</td>
+            <td>{{ item.totalUsed | number: '1.0-0' }}</td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="3" class="empty-row">Aucune donnée</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

@@ -1,5 +1,6 @@
 package com.riskboard.service;
 
+import com.riskboard.entity.AlertLevel;
 import com.riskboard.entity.RiskLimit;
 import org.springframework.stereotype.Service;
 
