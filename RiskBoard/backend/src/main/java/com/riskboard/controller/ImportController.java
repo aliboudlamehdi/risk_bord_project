@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 
 @RestController
-@RequestMapping("/api/imports")
+@RequestMapping("/api/risk-limits")
 public class ImportController {
 
     private final CsvImportService csvImportService;
@@ -22,7 +22,7 @@ public class ImportController {
         this.csvImportService = csvImportService;
     }
 
-    @PostMapping(path = "/risk-limits", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ImportSummary importRiskLimits(@RequestParam("file") MultipartFile file) {
         try {
             return csvImportService.importRiskLimits(file.getInputStream());

@@ -1,0 +1,49 @@
+<div class="csv-upload">
+  <h2>Import de limites de risque (CSV)</h2>
+  <p class="hint">
+    Colonnes attendues : name, ricosCode, country, sector, limitType, maxAmount, usedAmount, currency
+  </p>
+
+  <div class="upload-controls">
+    <input #fileInput type="file" accept=".csv" (change)="onFileSelected($event)" />
+    <button type="button" (click)="upload()" [disabled]="!selectedFile() || uploading()">
+      @if (uploading()) {
+        Import en cours...
+      } @else {
+        Importer
+      }
+    </button>
+  </div>
+
+  @if (error()) {
+    <p class="status-message error">{{ error() }}</p>
+  }
+
+  @if (result(); as summary) {
+    <div class="result">
+      <p class="summary">
+        <span class="success-count">{{ summary.successCount }}</span> ligne(s) importée(s) avec succès —
+        <span class="error-count">{{ summary.errorCount }}</span> erreur(s)
+      </p>
+
+      @if (summary.errors.length > 0) {
+        <table class="errors-table">
+          <thead>
+            <tr>
+              <th>Ligne</th>
+              <th>Erreur</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (err of summary.errors; track err.line) {
+              <tr>
+                <td>{{ err.line }}</td>
+                <td>{{ err.message }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+</div>
