@@ -1,0 +1,64 @@
+stages:
+  - build
+  - test
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+.maven_cache: &maven_cache
+  key: maven-$CI_COMMIT_REF_SLUG
+  paths:
+    - .m2/repository
+
+.npm_cache: &npm_cache
+  key: npm-$CI_COMMIT_REF_SLUG
+  paths:
+    - frontend/.npm
+
+backend:build:
+  stage: build
+  image: maven:3.9-eclipse-temurin-21
+  cache:
+    <<: *maven_cache
+  script:
+    - mvn -B -DskipTests clean package
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 week
+
+backend:test:
+  stage: test
+  image: maven:3.9-eclipse-temurin-21
+  cache:
+    <<: *maven_cache
+  script:
+    - mvn -B test
+  artifacts:
+    when: always
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+
+frontend:build:
+  stage: build
+  image: node:24-alpine
+  cache:
+    <<: *npm_cache
+  script:
+    - cd frontend
+    - npm ci --cache .npm --prefer-offline
+    - npm run build
+  artifacts:
+    paths:
+      - frontend/dist
+    expire_in: 1 week
+
+frontend:test:
+  stage: test
+  image: node:24-alpine
+  cache:
+    <<: *npm_cache
+  script:
+    - cd frontend
+    - npm ci --cache .npm --prefer-offline
+    - npx ng test --watch=false
